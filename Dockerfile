@@ -23,4 +23,4 @@ RUN composer dump-autoload --optimize
 
 EXPOSE 8000
 
-CMD cp .env.example .env && sed -i '/^APP_KEY=/d' .env && echo APP_KEY=$APP_KEY >> .env && sed -i '/^APP_URL=/d' .env && echo APP_URL=https://proud-growth-production-878a.up.railway.app >> .env && php artisan config:clear && php artisan route:clear && php artisan migrate:fresh --force --seed --seeder=DatabaseSeeder && php artisan serve --host=0.0.0.0 --port=$PORT
+CMD cp .env.example .env && sed -i '/^APP_KEY=/d' .env && echo APP_KEY=$APP_KEY >> .env && sed -i '/^APP_ENV=/d' .env && echo APP_ENV=production >> .env && sed -i '/^APP_URL=/d' .env && echo APP_URL=https://proud-growth-production-878a.up.railway.app >> .env && php artisan config:clear && php artisan route:clear && php artisan migrate:fresh --force --seed --seeder=DatabaseSeeder && php artisan serve --host=0.0.0.0 --port=$PORT
