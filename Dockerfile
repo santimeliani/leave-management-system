@@ -15,10 +15,9 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-COPY package.json package-lock.json ./
-RUN npm ci && npm run build
-
 COPY . .
+
+RUN npm ci && npm run build
 
 RUN composer dump-autoload --optimize
 
