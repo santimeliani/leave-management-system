@@ -11,7 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app['url']->forceScheme('https');
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://proud-growth-production-878a.up.railway.app');
         \Illuminate\Support\Facades\URL::forceScheme('https');
     }
 }
