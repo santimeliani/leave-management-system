@@ -23,4 +23,4 @@ RUN composer dump-autoload --optimize
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "cp .env.example .env && php artisan key:generate --force && touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"]
+CMD cp .env.example .env && sed -i '/^APP_KEY=/d' .env && echo APP_KEY=$APP_KEY >> .env && touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT
