@@ -1,0 +1,88 @@
+@startuml Class Diagram - Sistem Pengajuan Cuti
+
+skinparam class {
+    BackgroundColor #FFF3E0
+    BorderColor #E65100
+    ArrowColor #BF360C
+    AttributeFontSize 11
+}
+skinparam classAttributeIconSize 0
+
+title Class Diagram - Sistem Pengajuan Cuti Karyawan
+
+abstract class Authenticatable {
+    #fillable: array
+    #hidden: array
+    +casts(): array
+}
+
+class User {
+    -id: int
+    -name: string
+    -email: string
+    -password: string
+    -role: string
+    -email_verified_at: datetime
+    -created_at: datetime
+    -updated_at: datetime
+    +leaveRequests(): HasMany
+    +leaveBalances(): HasMany
+    +getLeaveBalanceForType(int, int): ?LeaveBalance
+}
+
+class LeaveType {
+    -id: int
+    -name: string
+    -description: text
+    -created_at: datetime
+    -updated_at: datetime
+    +leaveRequests(): HasMany
+}
+
+class LeaveRequest {
+    -id: int
+    -user_id: int
+    -leave_type_id: int
+    -start_date: date
+    -end_date: date
+    -reason: text
+    -status: enum
+    -reject_reason: text
+    -admin_notes: text
+    -decision_at: timestamp
+    -created_at: datetime
+    -updated_at: datetime
+    +user(): BelongsTo
+    +leaveType(): BelongsTo
+    +getDurationInDaysAttribute(): int
+}
+
+class LeaveBalance {
+    -id: int
+    -user_id: int
+    -leave_type_id: int
+    -quota: int
+    -used: int
+    -year: int
+    -created_at: datetime
+    -updated_at: datetime
+    +user(): BelongsTo
+    +leaveType(): BelongsTo
+    +getRemainingAttribute(): int
+}
+
+Authenticatable <|-- User
+User "1" --> "*" LeaveRequest : has
+User "1" --> "*" LeaveBalance : has
+LeaveType "1" --> "*" LeaveRequest : has
+LeaveType "1" --> "*" LeaveBalance : has
+
+enum LeaveStatus {
+    pending
+    approved
+    rejected
+}
+
+LeaveRequest --> LeaveStatus
+
+@enduml

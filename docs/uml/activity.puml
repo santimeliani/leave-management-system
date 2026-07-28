@@ -1,0 +1,55 @@
+@startuml Activity Diagram - Proses Approval Cuti
+
+skinparam activity {
+    BackgroundColor #E8F5E9
+    BorderColor #2E7D32
+    ArrowColor #1B5E20
+    DiamondBackgroundColor #FFF9C4
+}
+
+title Activity Diagram - Proses Approval Cuti
+
+start
+
+:Admin membuka daftar pengajuan cuti;
+
+repeat
+    :Memilih pengajuan yang pending;
+
+    if (Memilih Aksi?) then (Approve)
+        :Admin mengklik "Approve";
+        :Sistem memvalidasi status = pending;
+
+        if (Status valid?) then (Ya)
+            :Update status = approved;
+            :Set decision_at = now();
+            :Kurangi kuota cuti karyawan;
+            :Dispatch event LeaveRequestApproved;
+            :Tampilkan notifikasi sukses;
+        else (Tidak)
+            :Tampilkan error "Sudah diproses";
+        endif
+
+    elseif (Reject) then (Reject)
+        :Admin mengklik "Reject";
+        :Sistem menampilkan form penolakan;
+        :Admin mengisi alasan penolakan;
+
+        if (Alasan diisi?) then (Ya)
+            :Update status = rejected;
+            :Simpan reject_reason;
+            :Set decision_at = now();
+            :Dispatch event LeaveRequestRejected;
+            :Tampilkan notifikasi sukses;
+        else (Tidak)
+            :Tampilkan validasi error;
+        endif
+
+    endif
+
+repeat while (Masih ada pengajuan?) is (Ya)
+-> Tidak;
+
+stop
+
+@enduml

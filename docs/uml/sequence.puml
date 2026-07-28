@@ -1,0 +1,49 @@
+@startuml Sequence Diagram - Pengajuan Cuti
+
+skinparam sequence {
+    ArrowColor #1565C0
+    ActorBorderColor #1565C0
+    LifeLineBorderColor #1565C0
+    ParticipantBackgroundColor #E3F2FD
+}
+
+title Sequence Diagram - Proses Pengajuan Cuti
+
+actor Karyawan
+participant "Controller" as Controller
+participant "Service" as Service
+participant "Model" as Model
+database "Database" as DB
+
+Karyawan -> Controller : POST /leave-requests (ajukan cuti)
+activate Controller
+
+Controller -> Controller : Validasi input
+
+Controller -> Service : LeaveRequestService->create(data)
+activate Service
+
+Service -> DB : Cek LeaveBalance(kuota tersisa)
+activate DB
+DB --> Service : LeaveBalance
+deactivate DB
+
+alt Kuota Tidak Mencukupi
+    Service --> Controller : throw InsufficientLeaveBalanceException
+    Controller --> Karyawan : Redirect dengan error
+else Kuota Mencukupi
+    Service -> Model : LeaveRequest::create(data)
+    activate Model
+    Model -> DB : INSERT INTO leave_requests
+    DB --> Model : Success
+    Model --> Service : LeaveRequest
+    deactivate Model
+    
+    Service --> Controller : LeaveRequest
+    deactivate Service
+    
+    Controller --> Karyawan : Redirect ke index (sukses)
+    deactivate Controller
+end
+
+@enduml

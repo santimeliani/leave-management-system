@@ -1,0 +1,76 @@
+@startuml Component Diagram - Sistem Pengajuan Cuti
+
+skinparam component {
+    BackgroundColor #F3E5F5
+    BorderColor #6A1B9A
+    ArrowColor #4A148C
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #616161
+}
+
+title Component Diagram - Sistem Pengajuan Cuti Karyawan
+
+package "Presentation Layer" {
+    [Blade Views] as Views
+    [Controllers] as Controllers
+    [Middleware] as Middleware
+}
+
+package "Authorization Layer" {
+    [LeaveRequestPolicy] as LRPolicy
+    [LeaveTypePolicy] as LTPolicy
+}
+
+package "Business Logic Layer" {
+    [LeaveRequestService] as LRS
+    [LeaveBalanceService] as LBS
+    [LeaveTypeService] as LTS
+}
+
+package "Event Layer" {
+    [Events] as Events
+    [Listeners] as Listeners
+}
+
+package "Data Access Layer" {
+    [User Model] as UserModel
+    [LeaveType Model] as LTModel
+    [LeaveRequest Model] as LRModel
+    [LeaveBalance Model] as LBModel
+}
+
+package "Exception Layer" {
+    [InsufficientLeaveBalanceException] as Ex1
+    [UnauthorizedActionException] as Ex2
+}
+
+database "SQLite/MySQL" as DB
+
+Views --> Controllers
+Controllers --> Middleware
+Controllers --> LRPolicy
+Controllers --> LTPolicy
+Controllers --> LRS
+Controllers --> LBS
+Controllers --> LTS
+
+LRS --> LRModel
+LRS --> LBS
+LRS --> Events
+LBS --> LBModel
+LTS --> LTModel
+
+Events --> Listeners
+Listeners --> LBS
+
+LRModel --> DB
+LTModel --> DB
+LBModel --> DB
+UserModel --> DB
+
+LRS ..> Ex1
+Controllers ..> Ex2
+
+@enduml

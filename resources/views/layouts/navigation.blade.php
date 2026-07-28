@@ -12,14 +12,43 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @can('viewAny', App\Models\LeaveType::class)
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('leave-types.index')" :active="request()->routeIs('leave-types.*')">
+                            {{ __('Jenis Cuti') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.leave-requests.index')" :active="request()->routeIs('admin.leave-requests.*')">
+                            {{ __('Approval Cuti') }}
+                        </x-nav-link>
+                    @elsecan('create', App\Models\LeaveRequest::class)
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('leave-requests.create')" :active="request()->routeIs('leave-requests.create')">
+                            {{ __('Ajukan Cuti') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.index')">
+                            {{ __('Daftar Pengajuan') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Role Badge -->
+                @can('viewAny', App\Models\LeaveType::class)
+                    <span class="mr-3 px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                        Admin
+                    </span>
+                @else
+                    <span class="mr-3 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700">
+                        Karyawan
+                    </span>
+                @endcan
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -67,9 +96,27 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @can('viewAny', App\Models\LeaveType::class)
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('leave-types.index')" :active="request()->routeIs('leave-types.*')">
+                    {{ __('Jenis Cuti') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.leave-requests.index')" :active="request()->routeIs('admin.leave-requests.*')">
+                    {{ __('Approval Cuti') }}
+                </x-responsive-nav-link>
+            @elsecan('create', App\Models\LeaveRequest::class)
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('leave-requests.create')" :active="request()->routeIs('leave-requests.create')">
+                    {{ __('Ajukan Cuti') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.index')">
+                    {{ __('Daftar Pengajuan') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

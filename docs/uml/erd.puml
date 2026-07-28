@@ -1,0 +1,89 @@
+@startuml ERD - Sistem Pengajuan Cuti
+
+skinparam entity {
+    BackgroundColor #E8F5E9
+    BorderColor #2E7D32
+    FontColor #1B5E20
+}
+skinparam entityAttribute {
+    BackgroundColor #F1F8E9
+}
+
+title Entity Relationship Diagram - Sistem Pengajuan Cuti Karyawan
+
+entity "users" as users {
+    * **id** : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255)
+    * email : VARCHAR(255) <<UNIQUE>>
+    * email_verified_at : TIMESTAMP <<NULLABLE>>
+    * password : VARCHAR(255)
+    * role : VARCHAR(255) <<DEFAULT: karyawan>>
+    * remember_token : VARCHAR(100) <<NULLABLE>>
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+entity "leave_types" as lt {
+    * **id** : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255)
+    description : TEXT <<NULLABLE>>
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+entity "leave_requests" as lr {
+    * **id** : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * leave_type_id : BIGINT <<FK>>
+    * start_date : DATE
+    * end_date : DATE
+    * reason : TEXT
+    * status : ENUM(pending, approved, rejected) <<DEFAULT: pending>>
+    reject_reason : TEXT <<NULLABLE>>
+    admin_notes : TEXT <<NULLABLE>>
+    decision_at : TIMESTAMP <<NULLABLE>>
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+entity "leave_balances" as lb {
+    * **id** : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * leave_type_id : BIGINT <<FK>>
+    * quota : INTEGER <<DEFAULT: 12>>
+    * used : INTEGER <<DEFAULT: 0>>
+    * year : YEAR
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+    --
+    <<UNIQUE(user_id, leave_type_id, year)>>
+}
+
+entity "sessions" as sessions {
+    * **id** : VARCHAR(255) <<PK>>
+    --
+    * user_id : BIGINT <<NULLABLE, FK>>
+    * ip_address : VARCHAR(45) <<NULLABLE>>
+    * user_agent : TEXT <<NULLABLE>>
+    * payload : LONGTEXT
+    * last_activity : INTEGER
+}
+
+entity "cache" as cache {
+    * **key** : VARCHAR(255) <<PK>>
+    --
+    value : MEDIUMTEXT
+    expiration : INTEGER
+}
+
+users ||--o{ lr : "membuat"
+users ||--o{ lb : "memiliki kuota"
+lt ||--o{ lr : "digunakan dalam"
+lt ||--o{ lb : "dikuti kuotanya"
+users ||--o{ sessions : "aktif dalam"
+
+@enduml

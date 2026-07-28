@@ -1,0 +1,55 @@
+@startuml State Diagram - Status Pengajuan Cuti
+
+skinparam state {
+    BackgroundColor #E3F2FD
+    BorderColor #1565C0
+    ArrowColor #0D47A1
+}
+skinparam stateDiagram {
+    StateBackgroundColor #FFF3E0
+}
+
+title State Diagram - Transisi Status Pengajuan Cuti
+
+[*] --> Pending : Karyawan mengajukan cuti
+
+state Pending {
+    Pending : Menunggu persetujuan admin
+    Pending : Bisa diedit/dihapus karyawan
+}
+
+state Approved {
+    Approved : Disetujui oleh admin
+    Approved : Kuota cuti berkurang
+    Approved : Tidak bisa diedit/dihapus
+}
+
+state Rejected {
+    Rejected : Ditolak oleh admin
+    Rejected : Ada alasan penolakan
+    Rejected : Tidak bisa diedit/dihapus
+}
+
+Pending --> Approved : Admin approve
+Pending --> Rejected : Admin reject
+Pending --> [*] : Karyawan batalkan
+
+Approved --> [*]
+Rejected --> [*]
+
+note right of Pending
+    Status awal saat
+    pengajuan dibuat
+end note
+
+note right of Approved
+    decision_at di-set
+    kuota dikurangi
+end note
+
+note left of Rejected
+    reject_reason wajib
+    decision_at di-set
+end note
+
+@enduml

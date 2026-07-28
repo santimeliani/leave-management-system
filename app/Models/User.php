@@ -2,16 +2,27 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\LeaveRequest;
+use App\Models\LeaveBalance;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function leaveBalances(): HasMany
+    {
+        return $this->hasMany(LeaveBalance::class);
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +33,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-         'role',
+        'role',
     ];
 
     /**
@@ -46,5 +57,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getLeaveBalanceForType(int $leaveTypeId, int $year = null): ?LeaveBalance
+    {
+        $year = $year ?? (int) date('Y');
+
+        return $this->leaveBalances()
+            ->where('leave_type_id', $leaveTypeId)
+            ->where('year', $year)
+            ->first();
     }
 }
