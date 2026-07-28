@@ -10,7 +10,7 @@
 
             <div class="bg-white shadow rounded-lg p-6">
 
-                <form action="{{ route('leave-requests.update', $leaveRequest) }}" method="POST">
+                <form action="{{ route('leave-requests.update', $leaveRequest) }}" method="POST" enctype="multipart/form-data">
 
                     @csrf
                     @method('PUT')
@@ -87,6 +87,32 @@
                             required>{{ old('reason', $leaveRequest->reason) }}</textarea>
 
                         @error('reason')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block font-medium text-sm text-gray-700">
+                            Lampiran <span class="text-gray-400 text-xs">(opsional - PDF, DOC, DOCX, JPG, PNG. Maks 100MB)</span>
+                        </label>
+
+                        @if($leaveRequest->attachment)
+                            <div class="mb-2 p-2 bg-gray-50 rounded flex items-center gap-2">
+                                <span class="text-sm text-gray-600">File saat ini:</span>
+                                <a href="{{ route('leave-requests.attachment', $leaveRequest) }}"
+                                   class="text-blue-600 hover:underline text-sm">
+                                    {{ basename($leaveRequest->attachment) }}
+                                </a>
+                            </div>
+                        @endif
+
+                        <input
+                            type="file"
+                            name="attachment"
+                            class="w-full mt-1 rounded-md border-gray-300 shadow-sm"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+                        @error('attachment')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>

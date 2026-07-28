@@ -5,6 +5,8 @@ use App\Models\LeaveType;
 use App\Models\LeaveRequest;
 use App\Models\LeaveBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -111,6 +113,49 @@ test('karyawan can delete pending leave request', function () {
 
     $response->assertRedirect(route('leave-requests.index'));
     $this->assertDatabaseMissing('leave_requests', ['id' => $leaveRequest->id]);
+});
+
+test('karyawan can create leave request with attachment', function () {
+    Storage::fake('public');
+
+    $this->actingAs($this->karyawan);
+
+    $file = UploadedFile::fake()->create('dokumen.pdf', 100, 'application/pdf');
+
+    $response = $this->post(route('leave-requests.store'), [
+        'leave_type_id' => $this->leaveType->id,
+        'start_date' => '2026-09-01',
+        'end_date' => '2026-09-03',
+        'reason' => 'Liburan keluarga',
+        'attachment' => $file,
+    ]);
+
+    $response->assertRedirect(route('leave-requests.index'));
+    $this->assertDatabaseHas('leave_requests', [
+        'user_id' => $this->karyawan->id,
+        'leave_type_id' => $this->leaveType->id,
+        'status' => 'pending',
+    ]);
+
+    $leaveRequest = LeaveRequest::where('user_id', $this->karyawan->id)->first();
+    expect($leaveRequest->attachment)->not->toBeNull();
+    Storage::disk('public')->assertExists($leaveRequest->attachment);
+});
+
+test('karyawan cannot create leave request with invalid attachment type', function () {
+    $this->actingAs($this->karyawan);
+
+    $file = UploadedFile::fake()->create('virus.exe', 100, 'application/x-msdownload');
+
+    $response = $this->post(route('leave-requests.store'), [
+        'leave_type_id' => $this->leaveType->id,
+        'start_date' => '2026-09-01',
+        'end_date' => '2026-09-03',
+        'reason' => 'Liburan',
+        'attachment' => $file,
+    ]);
+
+    $response->assertSessionHasErrors(['attachment']);
 });
 
 test('karyawan cannot delete approved leave request', function () {

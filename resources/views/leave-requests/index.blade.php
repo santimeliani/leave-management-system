@@ -37,6 +37,7 @@
                             <th class="px-6 py-3 text-left">Jenis Cuti</th>
                             <th class="px-6 py-3 text-left">Tanggal Mulai</th>
                             <th class="px-6 py-3 text-left">Tanggal Selesai</th>
+                            <th class="px-6 py-3 text-left">Lampiran</th>
                             <th class="px-6 py-3 text-left">Status</th>
                             <th class="px-6 py-3 text-center">Aksi</th>
                         </tr>
@@ -62,6 +63,17 @@
 
                                 <td class="px-6 py-4">
                                     {{ $request->end_date->format('d M Y') }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    @if($request->attachment)
+                                        <a href="{{ route('leave-requests.attachment', $request) }}"
+                                           class="text-blue-600 hover:underline text-sm">
+                                            📎
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
                                 </td>
 
                                 <td class="px-6 py-4">
@@ -103,7 +115,7 @@
 
                             <tr>
 
-                                <td colspan="6" class="text-center py-6 text-gray-500">
+                                <td colspan="7" class="text-center py-6 text-gray-500">
                                     Belum ada pengajuan cuti.
                                 </td>
 

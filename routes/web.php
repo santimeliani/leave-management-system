@@ -25,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/leave-requests/{leaveRequest}/attachment',
+        [LeaveRequestController::class, 'downloadAttachment'])
+        ->name('leave-requests.attachment');
+
 });
 
 require __DIR__.'/auth.php';

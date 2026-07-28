@@ -51,6 +51,7 @@ class LeaveRequestService
             'start_date'    => $data['start_date'],
             'end_date'      => $data['end_date'],
             'reason'        => $data['reason'],
+            'attachment'    => $data['attachment'] ?? null,
             'status'        => 'pending',
         ]);
     }
@@ -97,18 +98,30 @@ class LeaveRequestService
 
     public function update(LeaveRequest $leaveRequest, array $data): LeaveRequest
     {
-        $leaveRequest->update([
+        $updateData = [
             'leave_type_id' => $data['leave_type_id'],
             'start_date'    => $data['start_date'],
             'end_date'      => $data['end_date'],
             'reason'        => $data['reason'],
-        ]);
+        ];
+
+        if (array_key_exists('attachment', $data)) {
+            $updateData['attachment'] = $data['attachment'];
+        }
+
+        $leaveRequest->update($updateData);
 
         return $leaveRequest->fresh();
     }
 
     public function delete(LeaveRequest $leaveRequest): void
     {
+        if ($leaveRequest->attachment) {
+            $path = storage_path('app/public/' . $leaveRequest->attachment);
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
         $leaveRequest->delete();
     }
 

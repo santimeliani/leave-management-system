@@ -46,10 +46,17 @@ class LeaveRequestController extends Controller
             'start_date'    => 'required|date',
             'end_date'      => 'required|date|after_or_equal:start_date',
             'reason'        => 'required|string',
+            'attachment'    => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:102400',
         ]);
 
+        $data = $request->all();
+
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('attachments', 'public');
+        }
+
         try {
-            $this->requestService->create($request->all(), Auth::id());
+            $this->requestService->create($data, Auth::id());
         } catch (\App\Exceptions\InsufficientLeaveBalanceException $e) {
             return back()->withErrors([
                 'leave_type_id' => $e->getMessage(),
@@ -89,9 +96,16 @@ class LeaveRequestController extends Controller
             'start_date'    => 'required|date',
             'end_date'      => 'required|date|after_or_equal:start_date',
             'reason'        => 'required|string',
+            'attachment'    => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:102400',
         ]);
 
-        $this->requestService->update($leaveRequest, $request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('attachments', 'public');
+        }
+
+        $this->requestService->update($leaveRequest, $data);
 
         return redirect()
             ->route('leave-requests.index')
@@ -107,5 +121,22 @@ class LeaveRequestController extends Controller
         return redirect()
             ->route('leave-requests.index')
             ->with('success', 'Pengajuan cuti berhasil dihapus.');
+    }
+
+    public function downloadAttachment(LeaveRequest $leaveRequest)
+    {
+        $this->authorize('view', $leaveRequest);
+
+        if (!$leaveRequest->attachment) {
+            abort(404, 'Lampiran tidak ditemukan.');
+        }
+
+        $path = storage_path('app/public/' . $leaveRequest->attachment);
+
+        if (!file_exists($path)) {
+            abort(404, 'File lampiran tidak ditemukan.');
+        }
+
+        return response()->download($path);
     }
 }

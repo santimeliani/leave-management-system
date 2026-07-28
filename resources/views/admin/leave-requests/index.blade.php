@@ -32,6 +32,8 @@
 
                             <th class="px-4 py-3">Alasan</th>
 
+                            <th class="px-4 py-3">Lampiran</th>
+
                             <th class="px-4 py-3">Status</th>
 
                             <th class="px-4 py-3">Aksi</th>
@@ -64,6 +66,17 @@
 
                             <td class="border px-4 py-3">
                                 {{ $request->reason }}
+                            </td>
+
+                            <td class="border px-4 py-3 text-center">
+                                @if($request->attachment)
+                                    <a href="{{ route('leave-requests.attachment', $request) }}"
+                                       class="text-blue-600 hover:underline">
+                                        📎
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
                             </td>
 
                             <td class="border px-4 py-3">

@@ -62,6 +62,19 @@
                     </p>
                 </div>
 
+                @if($leaveRequest->attachment)
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">
+                            Lampiran
+                        </label>
+                        <a href="{{ route('leave-requests.attachment', $leaveRequest) }}"
+                           class="inline-flex items-center gap-2 text-blue-600 hover:underline">
+                            <span>📎</span>
+                            <span>{{ basename($leaveRequest->attachment) }}</span>
+                        </a>
+                    </div>
+                @endif
+
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-500 mb-1">
                         Status

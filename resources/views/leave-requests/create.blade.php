@@ -33,7 +33,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('leave-requests.store') }}" method="POST">
+                <form action="{{ route('leave-requests.store') }}" method="POST" enctype="multipart/form-data">
 
                     @csrf
 
@@ -113,6 +113,22 @@
                             required>{{ old('reason') }}</textarea>
 
                         @error('reason')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block font-medium text-sm text-gray-700">
+                            Lampiran <span class="text-gray-400 text-xs">(opsional - PDF, DOC, DOCX, JPG, PNG. Maks 100MB)</span>
+                        </label>
+
+                        <input
+                            type="file"
+                            name="attachment"
+                            class="w-full mt-1 rounded-md border-gray-300 shadow-sm"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+                        @error('attachment')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
