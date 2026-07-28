@@ -8,16 +8,6 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\KaryawanDashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/myapp-debug', function () {
-    return response()->json([
-        'config_app_url' => config('app.url'),
-        'env_app_url' => env('APP_URL'),
-        'scheme' => request()->getScheme(),
-        'is_secure' => request()->isSecure(),
-        'env' => app()->environment(),
-    ]);
-});
-
 Route::get('/', function () {
     return view('welcome');
 });
